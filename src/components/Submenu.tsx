@@ -9,7 +9,7 @@ import { cloneItems, getPredicateValue } from './utils';
 
 export interface SubMenuProps
   extends InternalProps,
-    Omit<React.HTMLAttributes<HTMLElement>, 'hidden'> {
+  Omit<React.HTMLAttributes<HTMLElement>, 'hidden'> {
   /**
    * Any valid node that can be rendered
    */
@@ -71,28 +71,30 @@ export const Submenu: React.FC<SubMenuProps> = ({
   const isHidden = getPredicateValue(hidden, handlerParams);
 
   useEffect(() => {
-    if (nodeRef.current) {
-      const { innerWidth, innerHeight } = window;
-      const rect = nodeRef.current.getBoundingClientRect();
-      const style: SubMenuState = {};
+    setTimeout(() => {
+      if (nodeRef.current) {
+        const { innerWidth, innerHeight } = window;
+        const rect = nodeRef.current.getBoundingClientRect();
+        const style: SubMenuState = {};
 
-      if (rect.right < innerWidth) {
-        style.left = '100%';
-        style.right = undefined;
-      } else {
-        style.right = '100%';
-        style.left = undefined;
+        if (rect.right < innerWidth) {
+          style.left = '100%';
+          style.right = undefined;
+        } else {
+          style.right = '100%';
+          style.left = undefined;
+        }
+
+        if (rect.bottom > innerHeight) {
+          style.bottom = 0;
+          style.top = 'initial';
+        } else {
+          style.bottom = 'initial';
+        }
+
+        setPosition(style);
       }
-
-      if (rect.bottom > innerHeight) {
-        style.bottom = 0;
-        style.top = 'initial';
-      } else {
-        style.bottom = 'initial';
-      }
-
-      setPosition(style);
-    }
+    }, 100);
   }, []);
 
   function handleClick(e: React.SyntheticEvent) {
