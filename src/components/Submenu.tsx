@@ -93,7 +93,6 @@ export const Submenu: React.FC<SubMenuProps> = ({
       } else {
         style.bottom = 'initial';
       }
-      console.log(style);
       setPosition(style);
     }
   }, [menuRefTracker.visible, menuRefTracker.x, menuRefTracker.y]);
