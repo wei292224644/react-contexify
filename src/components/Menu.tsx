@@ -171,7 +171,6 @@ export const Menu: React.FC<MenuProps> = ({
         y,
       });
     }
-
     // state.visible and state{x,y} are updated together
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.visible]);
@@ -279,14 +278,14 @@ export const Menu: React.FC<MenuProps> = ({
       return cx({
         [`${STYLE.animationWillEnter}${animation}`]:
           animation && visible && !willLeave,
-        [`${STYLE.animationWillLeave}${animation} ${STYLE.animationWillLeave}'disabled'`]:
+        [`${STYLE.animationWillLeave}${animation} ${STYLE.animationWillLeave}disabled`]:
           animation && visible && willLeave,
       });
     } else if ('enter' in animation && 'exit' in animation) {
       return cx({
         [`${STYLE.animationWillEnter}${animation.enter}`]:
           animation.enter && visible && !willLeave,
-        [`${STYLE.animationWillLeave}${animation.exit} ${STYLE.animationWillLeave}'disabled'`]:
+        [`${STYLE.animationWillLeave}${animation.exit} ${STYLE.animationWillLeave}disabled`]:
           animation.exit && visible && willLeave,
       });
     }
