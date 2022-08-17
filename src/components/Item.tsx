@@ -109,7 +109,7 @@ export const Item: React.FC<ItemProps> = ({
 
   function trackRef(node: HTMLElement | null) {
     if (node && !isDisabled)
-      refTracker.set(node, {
+      refTracker.refTracker.set(node, {
         node,
         isSubmenu: false,
       });

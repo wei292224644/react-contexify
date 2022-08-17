@@ -35,6 +35,8 @@ export interface MenuProps
    */
   id: MenuId;
 
+  destroyOnHide?: boolean;
+
   /**
    * Any valid node that can be rendered
    */
@@ -82,6 +84,7 @@ interface MenuState {
   triggerEvent: TriggerEvent;
   propsFromTrigger: any;
   willLeave: boolean;
+  destroyed: boolean
 }
 
 function reducer(
@@ -100,6 +103,7 @@ export const Menu: React.FC<MenuProps> = ({
   className,
   children,
   animation = 'scale',
+  destroyOnHide = true,
   onHidden = NOOP,
   onShown = NOOP,
   ...rest
@@ -107,6 +111,7 @@ export const Menu: React.FC<MenuProps> = ({
   const [state, setState] = useReducer(reducer, {
     x: 0,
     y: 0,
+    destroyed: destroyOnHide,
     visible: false,
     triggerEvent: {} as TriggerEvent,
     propsFromTrigger: null,
@@ -238,6 +243,7 @@ export const Menu: React.FC<MenuProps> = ({
     setTimeout(() => {
       setState({
         visible: true,
+        destroyed: false,
         willLeave: false,
         x,
         y,
@@ -262,12 +268,12 @@ export const Menu: React.FC<MenuProps> = ({
 
     hasExitAnimation(animation)
       ? setState(state => ({ willLeave: state.visible }))
-      : setState(state => ({ visible: state.visible ? false : state.visible }));
+      : setState(state => ({ visible: state.visible ? false : state.visible, destroyed: destroyOnHide }));
   }
 
   function handleAnimationEnd() {
     if (state.willLeave && state.visible) {
-      setState({ visible: false, willLeave: false });
+      setState({ visible: false, willLeave: false, destroyed: destroyOnHide });
     }
   }
 
@@ -293,10 +299,12 @@ export const Menu: React.FC<MenuProps> = ({
     return null;
   }
 
-  const { visible, triggerEvent, propsFromTrigger, x, y, willLeave } = state;
+  const { destroyed, visible, triggerEvent, propsFromTrigger, x, y, willLeave } = state;
   const cssClasses = cx(
     STYLE.menu,
     className,
+    "react-contexify-base",
+    { ["react-contexify-base-visible"]: visible },
     { [`${STYLE.theme}${theme}`]: theme },
     computeAnimationClasses()
   );
@@ -304,13 +312,12 @@ export const Menu: React.FC<MenuProps> = ({
   const menuStyle = {
     ...style,
     left: x,
-    top: y,
-    opacity: 1,
+    top: y
   };
 
   return (
-    <RefTrackerProvider refTracker={refTracker}>
-      {visible && (
+    <RefTrackerProvider refTracker={refTracker} visible={state.visible} x={x} y={y}>
+      {!destroyed && (
         <div
           {...rest}
           className={cssClasses}

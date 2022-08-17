@@ -58,6 +58,9 @@ export const Submenu: React.FC<SubMenuProps> = ({
   const menuRefTracker = useRefTrackerContext();
   const refTracker = useRefTracker();
   const nodeRef = useRef<HTMLDivElement>(null);
+  const labelRef = useRef<HTMLDivElement>(null);
+
+
   const [position, setPosition] = useState<SubMenuState>({
     left: '100%',
     top: 0,
@@ -71,43 +74,43 @@ export const Submenu: React.FC<SubMenuProps> = ({
   const isHidden = getPredicateValue(hidden, handlerParams);
 
   useEffect(() => {
-    setTimeout(() => {
-      if (nodeRef.current) {
-        const { innerWidth, innerHeight } = window;
-        const rect = nodeRef.current.getBoundingClientRect();
-        const style: SubMenuState = {};
-
-        if (rect.right < innerWidth) {
-          style.left = '100%';
-          style.right = undefined;
-        } else {
-          style.right = '100%';
-          style.left = undefined;
-        }
-
-        if (rect.bottom > innerHeight) {
-          style.bottom = 0;
-          style.top = 'initial';
-        } else {
-          style.bottom = 'initial';
-        }
-
-        setPosition(style);
+    if (nodeRef.current && labelRef.current) {
+      const { innerWidth, innerHeight } = window;
+      const rect = nodeRef.current.getBoundingClientRect();
+      const labelRect = labelRef.current.getBoundingClientRect();
+      const style: SubMenuState = {};
+      if (labelRect.right + rect.width < innerWidth) {
+        style.left = '100%';
+        style.right = undefined;
+      } else {
+        style.right = '100%';
+        style.left = undefined;
       }
-    }, 100);
-  }, []);
+
+      if (labelRect.top + rect.height > innerHeight) {
+        style.bottom = labelRect.bottom - innerHeight;
+        style.top = 'initial';
+      } else {
+        style.bottom = 'initial';
+      }
+      console.log(style);
+      setPosition(style);
+    }
+  }, [menuRefTracker.visible, menuRefTracker.x, menuRefTracker.y]);
+
 
   function handleClick(e: React.SyntheticEvent) {
     e.stopPropagation();
   }
 
   function trackRef(node: HTMLElement | null) {
-    if (node && !isDisabled)
-      menuRefTracker.set(node, {
+    if (node && !isDisabled) {
+      menuRefTracker.refTracker.set(node, {
         node,
         isSubmenu: true,
         submenuRefTracker: refTracker,
       });
+    }
   }
 
   if (isHidden) return null;
@@ -121,8 +124,10 @@ export const Submenu: React.FC<SubMenuProps> = ({
     ...position,
   };
 
+
+
   return (
-    <RefTrackerProvider refTracker={refTracker}>
+    <RefTrackerProvider refTracker={refTracker} visible={menuRefTracker.visible} x={menuRefTracker.x} y={menuRefTracker.y}>
       <div
         {...rest}
         className={cssClasses}
@@ -132,7 +137,7 @@ export const Submenu: React.FC<SubMenuProps> = ({
         aria-haspopup
         aria-disabled={isDisabled}
       >
-        <div className={STYLE.itemContent} onClick={handleClick}>
+        <div className={STYLE.itemContent} onClick={handleClick} ref={labelRef}>
           {label}
           <span className={STYLE.submenuArrow}>{arrow}</span>
         </div>
@@ -144,6 +149,6 @@ export const Submenu: React.FC<SubMenuProps> = ({
           })}
         </div>
       </div>
-    </RefTrackerProvider>
+    </RefTrackerProvider >
   );
 };

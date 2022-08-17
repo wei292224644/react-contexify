@@ -103,9 +103,9 @@ export function App() {
       },
       position: state.customPosition
         ? {
-            x: 0,
-            y: 0,
-          }
+          x: 0,
+          y: 0,
+        }
         : null,
     });
   }
@@ -210,6 +210,15 @@ export function App() {
           </span>
         </div>
       </section>
+      <br/>
+      <br/>
+      <br/>
+      <br/>
+      <br/>
+      <br/>
+      <br/>
+      
+   
       <section>
         <div
           className="box"
@@ -224,6 +233,7 @@ export function App() {
         theme={state.theme}
         animation={getAnimation()}
         data-test={DATA_TEST.CONTEXT_MENU}
+        destroyOnHide={false}
       >
         <Item
           onClick={handleItemClick}
